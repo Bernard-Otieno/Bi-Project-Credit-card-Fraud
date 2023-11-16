@@ -1,13 +1,13 @@
 
 
-if (!is.element("renv", installed.packages()[, 1])) {
-  install.packages("renv", dependencies = TRUE) # nolint
-}
-require("renv") # nolint
+# if (!is.element("renv", installed.packages()[, 1])) {
+#   install.packages("renv", dependencies = TRUE) # nolint
+# }
+# require("renv") # nolint
 
 # Select option 1 to restore the project from the lockfile
-renv::init() # nolint
-renv::update()
+#renv::init() # nolint
+#renv::update()
 # Execute the following code to reinstall the specific package versions
 # recorded in the lockfile (restart R after executing the command):
 #renv::restore()
@@ -47,7 +47,7 @@ require("mlbench")
 #Loading dataset
 library(readr)
 data <- read_csv("data/data.csv")
-View(data)
+#View(data)
 dim(data)
 
 
