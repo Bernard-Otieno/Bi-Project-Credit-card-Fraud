@@ -28,6 +28,144 @@ lapply(.libPaths(), list.files)
 ############################################################################################
 ###########################################################################################
 #packages
+## dplyr - For data manipulation ----
+if (!is.element("dplyr", installed.packages()[, 1])) {
+  install.packages("dplyr", dependencies = TRUE,
+  repos = "https://cloud.r-project.org")
+}
+require("dplyr")
+
+## ggplot2 - For data visualizations using the Grammar for Graphics package ----
+if (!is.element("ggplot2", installed.packages()[, 1])) {
+install.packages("ggplot2", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("ggplot2")
+
+## ggrepel - Additional options for the Grammar for Graphics package ----
+if (!is.element("ggrepel", installed.packages()[, 1])) {
+install.packages("ggrepel", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("ggrepel")
+
+## ggraph - Additional options for the Grammar for Graphics package ----
+if (!is.element("ggraph", installed.packages()[, 1])) {
+install.packages("ggraph", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("ggraph")
+
+## tidytext - For text mining ----
+if (!is.element("tidytext", installed.packages()[, 1])) {
+install.packages("tidytext", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("tidytext")
+
+## tidyr - To tidy messy data ----
+if (!is.element("tidyr", installed.packages()[, 1])) {
+install.packages("tidyr", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("tidyr")
+
+## widyr - To widen, process, and re-tidy a dataset ----
+if (!is.element("widyr", installed.packages()[, 1])) {
+install.packages("widyr", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("widyr")
+
+## gridExtra - to arrange multiple grid-based plots on a page ----
+if (!is.element("gridExtra", installed.packages()[, 1])) {
+install.packages("gridExtra", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("gridExtra")
+
+## knitr - for dynamic report generation ----
+if (!is.element("knitr", installed.packages()[, 1])) {
+install.packages("knitr", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("knitr")
+
+## kableExtra - for nicely formatted output tables ----
+if (!is.element("kableExtra", installed.packages()[, 1])) {
+install.packages("kableExtra", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("kableExtra")
+
+## formattable -  To create a formattable object ----
+# A formattable object is an object to which a formatting function and related
+# attributes are attached.
+if (!is.element("formattable", installed.packages()[, 1])) {
+install.packages("formattable", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("formattable")
+
+## circlize - To create a cord diagram or visualization ----
+# by Gu et al. (2014)
+if (!is.element("circlize", installed.packages()[, 1])) {
+install.packages("circlize", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("circlize")
+
+## memery - For creating data analysis related memes ----
+# The memery package generates internet memes that optionally include a
+# superimposed inset plot and other atypical features, combining the visual
+# impact of an attention-grabbing meme with graphic results of data analysis.
+if (!is.element("memery", installed.packages()[, 1])) {
+install.packages("memery", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("memery")
+
+## magick - For image processing in R ----
+if (!is.element("magick", installed.packages()[, 1])) {
+install.packages("magick", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("magick")
+
+## yarrr - To create a pirate plot ----
+if (!is.element("yarrr", installed.packages()[, 1])) {
+install.packages("yarrr", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("yarrr")
+
+## radarchart - To create interactive radar charts using ChartJS ----
+if (!is.element("radarchart", installed.packages()[, 1])) {
+install.packages("radarchart", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("radarchart")
+
+## igraph - To create ngram network diagrams ----
+if (!is.element("igraph", installed.packages()[, 1])) {
+install.packages("igraph", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("igraph")
+
+## wordcloud2 - For creating wordcloud by using 'wordcloud2.JS ----
+if (!is.element("wordcloud2", installed.packages()[, 1])) {
+install.packages("wordcloud2", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("wordcloud2")
+
+## readr - Load datasets from CSV files ----
+if (!is.element("readr", installed.packages()[, 1])) {
+install.packages("readr", dependencies = TRUE,
+repos = "https://cloud.r-project.org")
+}
+require("readr")
 if (!is.element("readr", installed.packages()[, 1])) {
   install.packages("readr", dependencies = TRUE)
 }
@@ -146,6 +284,70 @@ if (!is.element("ggcorrplot", installed.packages()[, 1])) {
 }
 require("ggcorrplot")
 ggcorrplot(cor(data[,c(1, 3, 5, 6, 8, 9, 10, 11)]))
+
+boxplot(data[, 3], main = names(data)[3])
+
+par(mfrow = c(5, 9))
+for (i in 5:9) {
+  boxplot(data[, i], main = names(data)[i])
+}
+payment_data_yield <- as.numeric(unlist(data[, 2]))
+boxplot(payment_data_yield, main = names(data)[2])
+
+
+#  Create a subset of the variables/features ----
+data_subset<- data %>%
+  select(step, type, amount, nameOrig, oldbalanceOrg, newbalanceOrig, nameDest,
+         oldbalanceDest, newbalanceDest, isFraud, isFlaggedFraud)
+
+### Subset of rows ----
+# We then select 500 random observations to be included in the dataset
+rand_ind <- sample(seq_len(nrow(data_subset)), 500)
+data_rand <- data[rand_ind, ]
+
+
+## Amelia ----
+if (!is.element("Amelia", installed.packages()[, 1])) {
+  install.packages("Amelia", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+require("Amelia")
+## MICE ----
+# We use the MICE package to perform data imputation
+if (!is.element("mice", installed.packages()[, 1])) {
+  install.packages("mice", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+require("mice")
+# Confirm the "missingness" in the Dataset before Imputation ----
+# Are there missing values in the dataset?
+any_na(data_rand)
+
+# How many?
+n_miss(data_rand)
+
+# What is the percentage of missing data in the entire dataset?
+prop_miss(data_rand)*100
+# How many missing values does each variable have?
+data_rand %>% is.na() %>% colSums()
+
+# What is the number and percentage of missing values grouped by
+# each variable?
+miss_var_summary(data_rand)
+
+# What is the number and percentage of missing values grouped by
+# each observation?
+miss_case_summary(data_rand)
+
+# Which variables contain the most missing values?
+gg_miss_var(data_rand)
+
+# Where are missing values located (the shaded regions in the plot)?
+vis_miss(data_rand) + theme(axis.text.x = element_text(angle = 80))
+
+# Which combinations of variables are missing together?
+gg_miss_upset(data_rand)
+
 
 
 
