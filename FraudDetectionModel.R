@@ -319,8 +319,15 @@ if (!is.element("mice", installed.packages()[, 1])) {
                    repos = "https://cloud.r-project.org")
 }
 require("mice")
+
+
 # Confirm the "missingness" in the Dataset before Imputation ----
 # Are there missing values in the dataset?
+if (!is.element("naniar", installed.packages()[, 1])) {
+  install.packages("naniar", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+require("naniar")
 any_na(data_rand)
 
 # How many?
