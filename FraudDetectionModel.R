@@ -355,6 +355,56 @@ vis_miss(data_rand) + theme(axis.text.x = element_text(angle = 80))
 # Which combinations of variables are missing together?
 gg_miss_upset(data_rand)
 
+## pROC ----
+if (require("pROC")) {
+  require("pROC")
+} else {
+  install.packages("pROC", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+## caret ----
+if (require("caret")) {
+  require("caret")
+} else {
+  install.packages("caret", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+## 1.c. Split the dataset ----
+# Define a 75:25 train:test data split of the dataset.
+# That is, 75% of the original data will be used to train the model and
+# 25% of the original data will be used to test the model.
+class(data)
+# Convert isFraud to a factor with two levels
+str(data_rand$isFraud)
+data_rand$isFraud <- factor(data_rand$isFraud, levels = c(0, 1))
+
+train_index <- createDataPartition(data_rand$isFraud,
+                                   p = 0.75,
+                                   list = FALSE)
+data_train <- data_rand[train_index, ]
+data_test <- data_rand[-train_index, ]
+
+## 1.d. Train the Model ----
+# We apply the 5-fold cross validation resampling method
+train_control <- trainControl(method = "cv", number = 5)
+
+# We then train a Generalized Linear Model to predict the value of Diabetes
+# (whether the patient will test positive/negative for diabetes).
+
+# `set.seed()` is a function that is used to specify a starting point for the
+# random number generator to a specific value. This ensures that every time you
+# run the same code, you will get the same "random" numbers.
+set.seed(7)
+data_model_glm <-
+  train(isFraud ~ ., data = data_train, method = "glm",
+        metric = "Accuracy", trControl = train_control)
+
+## 1.e. Display the Model's Performance ----
+### Option 1: Use the metric calculated by caret when training the model ----
+# The results show an accuracy of approximately 77% (slightly above the baseline
+# accuracy) and a Kappa of approximately 49%.
+print(data_model_glm)
+
 
 
 
