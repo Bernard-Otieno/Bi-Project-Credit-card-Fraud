@@ -47,3 +47,8 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+#data folder
+data/data.csv
+data/fraudTest.csv
+data/fraudTrain.csv
