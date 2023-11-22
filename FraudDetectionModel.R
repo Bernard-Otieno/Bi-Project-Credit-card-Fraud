@@ -6,7 +6,7 @@
 # require("renv") # nolint
 
 # Select option 1 to restore the project from the lockfile
-#renv::init() # nolint
+renv::init() # nolint
 #renv::update()
 # Execute the following code to reinstall the specific package versions
 # recorded in the lockfile (restart R after executing the command):
@@ -188,6 +188,10 @@ data <- read_csv("data/data.csv")
 #View(data)
 dim(data)
 
+data$isFraud <- factor(data$isFraud, levels = c(0, 1))
+data$isFraud <- factor(data$isFlaggedFraud, levels = c(0, 1))
+
+
 
 #Identify the Data Types ----
 sapply(data, class)
@@ -302,7 +306,7 @@ data_subset<- data %>%
 
 ### Subset of rows ----
 # We then select 500 random observations to be included in the dataset
-rand_ind <- sample(seq_len(nrow(data_subset)), 500)
+rand_ind <- sample(seq_len(nrow(data_subset)), 6000)
 data_rand <- data[rand_ind, ]
 
 
@@ -374,15 +378,41 @@ if (require("caret")) {
 # That is, 75% of the original data will be used to train the model and
 # 25% of the original data will be used to test the model.
 class(data)
-# Convert isFraud to a factor with two levels
-str(data_rand$isFraud)
-data_rand$isFraud <- factor(data_rand$isFraud, levels = c(0, 1))
 
-train_index <- createDataPartition(data_rand$isFraud,
+# Convert isFraud to a factor with two levels
+str(data$isFraud)
+
+
+
+
+
+
+
+library(dplyr)
+
+# Assuming data_train is your training dataset
+# Create a balanced subset by undersampling the majority class
+fraud_samples <- data %>%
+  filter(isFraud == 1)
+
+non_fraud_samples <- data %>%
+  filter(isFraud == 0) %>%
+  slice_sample(n =100 * nrow(fraud_samples), replace = FALSE)
+
+balanced_data <- bind_rows(fraud_samples, non_fraud_samples)
+
+balanced_data$isFraud <- factor(balanced_data$isFraud, levels = c(0, 1))
+
+train_index <- createDataPartition(balanced_data$isFraud,
                                    p = 0.75,
                                    list = FALSE)
-data_train <- data_rand[train_index, ]
-data_test <- data_rand[-train_index, ]
+data_train <- balanced_data[train_index, ]
+data_test <- balanced_data[-train_index, ]
+
+table(data_train$isFraud)
+
+
+
 
 ## 1.d. Train the Model ----
 # We apply the 5-fold cross validation resampling method
@@ -395,17 +425,58 @@ train_control <- trainControl(method = "cv", number = 5)
 # random number generator to a specific value. This ensures that every time you
 # run the same code, you will get the same "random" numbers.
 set.seed(7)
-data_model_glm <-
-  train(isFraud ~ ., data = data_train, method = "glm",
-        metric = "Accuracy", trControl = train_control)
-
+data_model_glm <- train(
+  isFraud ~ ., 
+  data = balanced_data, 
+  method = "glm",
+  weights = ifelse(balanced_data$isFraud == 1, 10, 1), # Example weight adjustment
+  metric = "Accuracy", 
+  trControl = train_control
+)
 ## 1.e. Display the Model's Performance ----
 ### Option 1: Use the metric calculated by caret when training the model ----
 # The results show an accuracy of approximately 77% (slightly above the baseline
 # accuracy) and a Kappa of approximately 49%.
 print(data_model_glm)
 
+## caret ----
+if (require("caret")) {
+  require("caret")
+} else {
+  install.packages("caret", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+predictions <- predict(data_model_glm, data_test[, 1:11])
+confusion_matrix <-
+  caret::confusionMatrix(predictions,
+                         data_test[, 1:10]$isFraud)
+print(confusion_matrix)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# use renv::restore() to re-install the same package version in their local
+# machine during their initialization step.
+ renv::snapshot() # nolint
 
 
 
